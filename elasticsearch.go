@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"regexp"
 	"time"
+	"io/ioutil"
+	"fmt"
 )
 
 type ESUriErorr struct{}
@@ -35,6 +37,7 @@ type ESRequestResponse struct {
 	ReqIfModifiedSince   string         `json:"Req_If-Modified-Since,omitempty"`
 	ReqConnection        string         `json:"Req_Connection,omitempty"`
 	ReqCookies           []*http.Cookie `json:"Req_Cookies,omitempty"`
+	ReqGorFlag	     string	    `json:"Req_Gor-Flag,omitempty"`
 	RespStatus           string         `json:"Resp_Status"`
 	RespStatusCode       int            `json:"Resp_Status-Code"`
 	RespProto            string         `json:"Resp_Proto,omitempty"`
@@ -48,6 +51,9 @@ type ESRequestResponse struct {
 	RespSetCookie        string         `json:"Resp_Set-Cookie,omitempty"`
 	Rtt                  int64          `json:"RTT"`
 	Timestamp            time.Time
+	RespBody             string         `json:"Resp_Body",omitempty"`
+	RespCompetingPlacements string	    `json:"Resp_Competing-Placements,omitempty"`
+	RespWinningPlacement string	    `json:"Resp_Winning-Placement,omitempty"`
 }
 
 // Parse ElasticSearch URI
@@ -118,7 +124,19 @@ func (p *ESPlugin) ResponseAnalyze(req *http.Request, resp *http.Response, start
 	}
 	t := time.Now()
 	rtt := p.RttDurationToMs(stop.Sub(start))
-
+	
+	//Response Body parsing is done here
+	fmt.Printf("Response is NOT null\n")
+	response_content, _ := ioutil.ReadAll(resp.Body)
+	fmt.Printf("RESPONSE CONTENT: \n" + string(response_content) + "\n")
+	//Inspect Gor response header content
+//	if resp.Header.Get("All-Competing-Placement-Ids") == "" {
+//	    resp.Header.Set("All-Competing-Placement-Ids", "FAILED TO GET COMPETING PLACEMENT IDS")
+//	}
+//	if resp.Header.Get("Winning-Placement-Id") == "" {
+//	    resp.Header.Set("Winning-Placement-Id", "FAILED TO GET WINNING PLACEMENT ID")
+//	}
+        
 	esResp := ESRequestResponse{
 		ReqUrl:               req.URL.String(),
 		ReqMethod:            req.Method,
@@ -129,6 +147,7 @@ func (p *ESPlugin) ResponseAnalyze(req *http.Request, resp *http.Response, start
 		ReqIfModifiedSince:   req.Header.Get("If-Modified-Since"),
 		ReqConnection:        req.Header.Get("Connection"),
 		ReqCookies:           req.Cookies(),
+		ReqGorFlag:	      req.Header.Get("Is-Coming-From-Gor"),
 		RespStatus:           resp.Status,
 		RespStatusCode:       resp.StatusCode,
 		RespProto:            resp.Proto,
@@ -142,6 +161,9 @@ func (p *ESPlugin) ResponseAnalyze(req *http.Request, resp *http.Response, start
 		RespSetCookie:        resp.Header.Get("Set-Cookie"),
 		Rtt:                  rtt,
 		Timestamp:            t,
+		RespBody:             string(response_content),
+		RespCompetingPlacements: resp.Header.Get("All-Competing-Placement-Ids"),
+		RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
 	}
 	j, err := json.Marshal(&esResp)
 	if err != nil {
