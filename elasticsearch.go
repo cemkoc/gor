@@ -51,7 +51,6 @@ type ESRequestResponse struct {
 	RespSetCookie        string         `json:"Resp_Set-Cookie,omitempty"`
 	Rtt                  int64          `json:"RTT"`
 	Timestamp            time.Time
-	RespBody             string         `json:"Resp_Body",omitempty"`
 	RespCompetingPlacements string	    `json:"Resp_Competing-Placements,omitempty"`
 	RespWinningPlacement string	    `json:"Resp_Winning-Placement,omitempty"`
 }
@@ -125,18 +124,6 @@ func (p *ESPlugin) ResponseAnalyze(req *http.Request, resp *http.Response, start
 	t := time.Now()
 	rtt := p.RttDurationToMs(stop.Sub(start))
 	
-	//Response Body parsing is done here
-	fmt.Printf("Response is NOT null\n")
-	response_content, _ := ioutil.ReadAll(resp.Body)
-	fmt.Printf("RESPONSE CONTENT: \n" + string(response_content) + "\n")
-	//Inspect Gor response header content
-//	if resp.Header.Get("All-Competing-Placement-Ids") == "" {
-//	    resp.Header.Set("All-Competing-Placement-Ids", "FAILED TO GET COMPETING PLACEMENT IDS")
-//	}
-//	if resp.Header.Get("Winning-Placement-Id") == "" {
-//	    resp.Header.Set("Winning-Placement-Id", "FAILED TO GET WINNING PLACEMENT ID")
-//	}
-        
 	esResp := ESRequestResponse{
 		ReqUrl:               req.URL.String(),
 		ReqMethod:            req.Method,
@@ -161,7 +148,6 @@ func (p *ESPlugin) ResponseAnalyze(req *http.Request, resp *http.Response, start
 		RespSetCookie:        resp.Header.Get("Set-Cookie"),
 		Rtt:                  rtt,
 		Timestamp:            t,
-		RespBody:             string(response_content),
 		RespCompetingPlacements: resp.Header.Get("All-Competing-Placement-Ids"),
 		RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
 	}
