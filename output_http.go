@@ -249,7 +249,7 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 		o.elasticSearch.ResponseAnalyze(request, resp, start, stop)
 	}
 	if o.responseInterceptor != nil {
-		o.responseInterceptor.ResponseAnalyze(request, resp, start, stop)
+		o.responseInterceptor.ResponseAnalyze(request, resp)
         }
 }
 

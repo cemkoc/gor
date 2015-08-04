@@ -1,27 +1,27 @@
 package main
 
 import (
-	"os"
-	"io"
-	"io/ioutil"
+	//"io"
+	//"io/ioutil"
 	"log"
-	"sync/atomic"
+	//"sync/atomic"
 	"time"
 	"net/http"
-	"net/url"
-	"regexp"
-	"fmt"
+	//"net/url"
+	//"regexp"
+	//"fmt"
 )
 
 type ResponseInterceptor struct {
-	ReqUrl               string
-	ReqUserAgent         string
-	ReqGorFlag	     string
-	ReqPlacementId       string
-	RespStatus           string
-	RespStatusCode       int
-	RespCompetingPlacements string
-	RespWinningPlacement string
+	ReqUrl                   string
+	ReqUserAgent             string
+	ReqGorFlag	         string
+	ReqPlacementId           string
+	RespStatus               string
+	RespStatusCode           int
+	Timestamp	     	 time.Time
+	RespCompetingPlacements  string
+	RespWinningPlacement     string
 }
 
 func (respInter *ResponseInterceptor) CalculateStatistics() bool {
@@ -31,12 +31,12 @@ func (respInter *ResponseInterceptor) CalculateStatistics() bool {
 
 func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *http.Response) {
 	if resp == nil {
-		// nil http response - skipped elasticsearch export for this request
+		// nil http response
 		return
 	}
 	t := time.Now()
 	
-	irr := ResponseInterceptor{
+	rI := ResponseInterceptor{
 		ReqUrl:               req.URL.String(),
 		ReqUserAgent:         req.UserAgent(),
 		ReqGorFlag:	      req.Header.Get("Is-Coming-From-Gor"),
@@ -48,8 +48,13 @@ func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *h
 		RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
 	}
 	
-	isEnough = CalculateStatistics()
-	if isEnough == true {
+	log.Println("Replaying auctions for this placement: " + rI.ReqPlacementId)
+	log.Println("Targeted Placements: " + rI.RespCompetingPlacements)
+	log.Println("Bidding Placement: " + rI.RespWinningPlacement)
+	
+	//isEnough = CalculateStatistics()
+	//if isEnough == true {
 		//kill the GOR Replay process
-	}
+	//}
+
 }
