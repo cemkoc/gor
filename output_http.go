@@ -248,7 +248,10 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 	if o.elasticSearch != nil {
 		o.elasticSearch.ResponseAnalyze(request, resp, start, stop)
 	}
-	if o.responseInterceptor != nil {
+	
+	comingfromgor := request.Header.Get("Is-Coming-From-Gor")
+	
+	if comingfromgor == "true" && o.responseInterceptor != nil {
 		o.responseInterceptor.ResponseAnalyze(request, resp)
         }
 }
