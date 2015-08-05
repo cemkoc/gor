@@ -47,7 +47,7 @@ func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *h
 		RespCompetingPlacements: resp.Header.Get("All-Competing-Placement-Ids"),
 		RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
 	}
-	insert_body, err = ioutil.ReadAll(resp.Body))
+	insert_body, err = ioutil.ReadAll(resp.Body)
 	
         log.Println("Response body: " + insert_body)
         log.Println("Replaying auctions for this placement: " + req.Header.Get("Placement-Id"))
