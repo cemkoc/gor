@@ -2,10 +2,10 @@ package main
 
 import (
 	//"io"
-	"io/ioutil"
+	//"io/ioutil"
 	"log"
 	//"sync/atomic"
-	"time"
+	//"time"
 	"net/http"
 	//"net/url"
 	//"regexp"
@@ -13,15 +13,15 @@ import (
 )
 
 type ResponseInterceptor struct {
-	ReqUrl                   string
-	ReqUserAgent             string
-	ReqGorFlag	         string
-	ReqPlacementId           string
-	RespStatus               string
-	RespStatusCode           int
-	Timestamp	     	 time.Time
-	RespCompetingPlacements  string
-	RespWinningPlacement     string
+	//ReqUrl                   string
+	//ReqUserAgent             string
+	//ReqGorFlag	         string
+	//ReqPlacementId           string
+	//RespStatus               string
+	//RespStatusCode           int
+	//Timestamp	     	 time.Time
+	//RespCompetingPlacements  string
+	//RespWinningPlacement     string
 }
 
 func (respInter *ResponseInterceptor) CalculateStatistics() bool {
@@ -34,27 +34,28 @@ func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *h
 		// nil http response
 		return
 	}
-	t := time.Now()
+	//t := time.Now()
 	
-	rI := ResponseInterceptor{
-		ReqUrl:               req.URL.String(),
-		ReqUserAgent:         req.UserAgent(),
-		ReqGorFlag:	      req.Header.Get("Is-Coming-From-Gor"),
-		ReqPlacementId:	      req.Header.Get("Placement-Id"),
-		RespStatus:           resp.Status,
-		RespStatusCode:       resp.StatusCode,
-		Timestamp:            t,
-		RespCompetingPlacements: resp.Header.Get("All-Competing-Placement-Ids"),
-		RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
-	}
-	insert_body, err = ioutil.ReadAll(resp.Body)
+	//rI := ResponseInterceptor{
+	//	ReqUrl:               req.URL.String(),
+	//	ReqUserAgent:         req.UserAgent(),
+	//	ReqGorFlag:	      req.Header.Get("Is-Coming-From-Gor"),
+	//	ReqPlacementId:	      req.Header.Get("Placement-Id"),
+	//	RespStatus:           resp.Status,
+	//	RespStatusCode:       resp.StatusCode,
+	//	Timestamp:            t,
+	//	RespCompetingPlacements: resp.Header.Get("All-Competing-Placement-Ids"),
+	//	RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
+	//}
+
+	//insert_body := string(ioutil.ReadAll(resp.Body)[:])
 	
-        log.Println("Response body: " + insert_body)
-        log.Println("Replaying auctions for this placement: " + req.Header.Get("Placement-Id"))
+        //log.Println("Response body: " + insert_body)
+	log.Println("Replaying auctions for this placement: " + req.Header.Get("Placement-Id"))
         log.Println("Targeted Placements: " + resp.Header.Get("All-Competing-Placement-Ids"))
         log.Println("Bidding Placement: " + resp.Header.Get("Winning-Placement-Id"))
 
-	//isEnough = CalculateStatistics()
+	//isEnough = rI.calculateStatistics()
 	//if isEnough == true {
 		//kill the GOR Replay process
 	//}

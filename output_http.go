@@ -226,6 +226,7 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 
 	for _, header := range o.headers {
 		SetHeader(request, header.Name, header.Value)
+		log.Println("HEADER: "+ header.Name + "  VALUE: " + header.Value)
 	}
 
 	start := time.Now()
@@ -262,7 +263,7 @@ func SetHeader(request *http.Request, name string, value string) {
 	if name == "Host" {
 		request.Host = value
 	} else {
-		request.Header.Set(name, value)
+		request.Header.Add(name, value)
 	}
 
 	return
