@@ -2,7 +2,7 @@ package main
 
 import (
 	//"io"
-	//"io/ioutil"
+	"io/ioutil"
 	"log"
 	//"sync/atomic"
 	"time"
@@ -47,11 +47,13 @@ func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *h
 		RespCompetingPlacements: resp.Header.Get("All-Competing-Placement-Ids"),
 		RespWinningPlacement: resp.Header.Get("Winning-Placement-Id"),
 	}
+	insert_body, err = ioutil.ReadAll(resp.Body))
 	
-	log.Println("Replaying auctions for this placement: " + rI.ReqPlacementId)
-	log.Println("Targeted Placements: " + rI.RespCompetingPlacements)
-	log.Println("Bidding Placement: " + rI.RespWinningPlacement)
-	
+        log.Println("Response body: " + insert_body)
+        log.Println("Replaying auctions for this placement: " + req.Header.Get("Placement-Id"))
+        log.Println("Targeted Placements: " + resp.Header.Get("All-Competing-Placement-Ids"))
+        log.Println("Bidding Placement: " + resp.Header.Get("Winning-Placement-Id"))
+
 	//isEnough = CalculateStatistics()
 	//if isEnough == true {
 		//kill the GOR Replay process
