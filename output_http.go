@@ -226,7 +226,6 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 
 	for _, header := range o.headers {
 		SetHeader(request, header.Name, header.Value)
-		log.Println("HEADER: "+ header.Name + "  VALUE: " + header.Value)
 	}
 
 	start := time.Now()
@@ -260,6 +259,8 @@ func (o *HTTPOutput) sendRequest(client *http.Client, data []byte) {
 func SetHeader(request *http.Request, name string, value string) {
 	// Need to check here for the Host header as it needs to be set on the request and not as a separate header
 	// http.ReadRequest sets it by default to the URL Host of the request being read
+	// *** Now it DOESN't overwrite already set headers so you can send more than 1 headers with the request when starting gor
+
 	if name == "Host" {
 		request.Host = value
 	} else {
