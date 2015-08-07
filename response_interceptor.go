@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 )
 var TOTAL_AUCTION_NUMBER int = 0
 var TARGETED_AUCTIONS_NUMBER int = 0
@@ -33,9 +34,10 @@ func CalculateStatistics(req *http.Request, resp *http.Response) {
 		
 	targeted_ratio_sofar := float64(TARGETED_AUCTIONS_NUMBER)/float64(TOTAL_AUCTION_NUMBER)
 	bidded_ratio_sofar := float64(BIDDED_AUCTIONS_NUMBER)/float64(TOTAL_AUCTION_NUMBER)
-	
-	log.Println("Targeted Ratio for placement " + replayed_placement + " is: %d percent", targeted_ratio_sofar)
-	log.Println("Bidded Ratio for placement " + replayed_placement + " is: %d percent", bidded_ratio_sofar)
+
+	log.Println("Total number of auctions: " + strconv.Itoa(TOTAL_AUCTION_NUMBER))
+	log.Println("Targeted Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(targeted_ratio_sofar*100, 'f', 3, 64) + " percent")
+	log.Println("Bidded Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(bidded_ratio_sofar*100, 'f', 3, 64) + " percent")
 	 
 }
 
@@ -48,6 +50,8 @@ func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *h
 	log.Println("Replaying auctions for this placement: " + req.Header.Get("Placement-Id"))
         log.Println("Targeted Placements: " + resp.Header.Get("All-Competing-Placement-Ids"))
         log.Println("Bidding Placement: " + resp.Header.Get("Winning-Placement-Id"))
+
+	CalculateStatistics(req, resp)
 	
 	//isEnough = calculateStatistics()
 	//if isEnough == true {
