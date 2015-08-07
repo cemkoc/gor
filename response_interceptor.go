@@ -1,16 +1,17 @@
 package main
 
 import (
-	//"io"
-	//"io/ioutil"
+	"os"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
+	"time"
 )
 var TOTAL_AUCTION_NUMBER int = 0
 var TARGETED_AUCTIONS_NUMBER int = 0
 var BIDDED_AUCTIONS_NUMBER int = 0
+var KILL_TIME = time.Now().Add(time.Second*15)
 
 type ResponseInterceptor struct {
 	//Dummy struct don't delete
@@ -18,6 +19,11 @@ type ResponseInterceptor struct {
 
 func CalculateStatistics(req *http.Request, resp *http.Response) {
 	// Implement the statistical sampling here
+	
+	if time.Now().After(KILL_TIME) {
+		log.Println("Killing the process due to overtime")
+		os.Exit(0)
+	}
 	TOTAL_AUCTION_NUMBER++
 	replayed_placement := req.Header.Get("Placement-Id")
 	competing_placements_list := resp.Header.Get("All-Competing-Placement-Ids")
@@ -32,13 +38,13 @@ func CalculateStatistics(req *http.Request, resp *http.Response) {
 		BIDDED_AUCTIONS_NUMBER++
 	}
 		
-	targeted_ratio_sofar := float64(TARGETED_AUCTIONS_NUMBER)/float64(TOTAL_AUCTION_NUMBER)
-	bidded_ratio_sofar := float64(BIDDED_AUCTIONS_NUMBER)/float64(TOTAL_AUCTION_NUMBER)
+	targeted_ratio_sofar := float64(TARGETED_AUCTIONS_NUMBER)/float64(TOTAL_AUCTION_NUMBER) * 100
+	bidded_ratio_sofar := float64(BIDDED_AUCTIONS_NUMBER)/float64(TOTAL_AUCTION_NUMBER) * 100
 
 	log.Println("Total number of auctions: " + strconv.Itoa(TOTAL_AUCTION_NUMBER))
-	log.Println("Targeted Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(targeted_ratio_sofar*100, 'f', 3, 64) + " percent")
-	log.Println("Bidded Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(bidded_ratio_sofar*100, 'f', 3, 64) + " percent")
-	 
+	log.Println("Targeted Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(targeted_ratio_sofar, 'f', 3, 64) + " percent")
+	log.Println("Bidded Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(bidded_ratio_sofar, 'f', 3, 64) + " percent")
+
 }
 
 func (respInter *ResponseInterceptor) ResponseAnalyze(req *http.Request, resp *http.Response) {
