@@ -11,7 +11,7 @@ import (
 var TOTAL_AUCTION_NUMBER int = 0
 var TARGETED_AUCTIONS_NUMBER int = 0
 var BIDDED_AUCTIONS_NUMBER int = 0
-var KILL_TIME = time.Now().Add(time.Second*15)
+var KILL_TIME = time.Now().Add(time.Second*3)
 
 type ResponseInterceptor struct {
 	//Dummy struct don't delete
