@@ -11,7 +11,7 @@ import (
 var TOTAL_AUCTION_NUMBER int = 0
 var TARGETED_AUCTIONS_NUMBER int = 0
 var BIDDED_AUCTIONS_NUMBER int = 0
-var KILL_TIME = time.Now().Add(time.Second*3)
+var KILL_TIME = time.Now().Add(time.Second*5)
 
 type ResponseInterceptor struct {
 	//Dummy struct don't delete
@@ -48,12 +48,15 @@ func CalculateStatistics(req *http.Request, resp *http.Response) {
 		if _, err := outfile.WriteString("Total number of auctions: " + strconv.Itoa(TOTAL_AUCTION_NUMBER) + "\n"); err != nil {
 			panic(err)
 		}
-		if _, err := outfile.WriteString("Targeted Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(targeted_ratio_sofar, 'f', 3, 64) + " percent\n"); err != nil {
+		if _, err := outfile.WriteString("Targeted Ratio for placement " + replayed_placement + " is: "+ strconv.Itoa(TARGETED_AUCTIONS_NUMBER) + "\n"); err != nil {
 			panic(err)
 		}
-		if _, err := outfile.WriteString("Bidded Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(bidded_ratio_sofar, 'f', 3, 64) + " percent\n"); err != nil {
-			panic(err)
+		if _,err := outfile.WriteString("Bidded Ratio for placement " + replayed_placement + " is: "+ strconv.Itoa(BIDDED_AUCTIONS_NUMBER) + "\n"); err != nil {
+		    panic(err)
 		}
+		//if _, err := outfile.WriteString("Bidded Ratio for placement " + replayed_placement + " is: "+ strconv.FormatFloat(bidded_ratio_sofar, 'f', 3, 64) + " percent\n"); err != nil {
+		//	panic(err)
+		//}
 
 		outfile.Close()
 		log.Println("Killing the process due to overtime")
